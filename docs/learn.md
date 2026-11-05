@@ -294,3 +294,66 @@ on Task 3) and p = 0.054 (Task 3 rules on Task 1). That second one is borderline
 estimated rules as exact when they carry some error, which makes it slightly strict.
 
 **Takeaway.** Task 1 and Task 3 appear to use the same partner rules for sends of 1 to 10.
+
+---
+
+## 4. Checking facts before writing the models
+
+**Where it lives:** `scripts/03_spec_checks.py`, results in `results/03_spec_checks.txt`, feeding
+`docs/model_spec.md`. No learning model exists yet. Full entries for each model come when they're built.
+
+### 4.1 Why a straight-line value can never pick the middle
+
+**Plain idea.** If each extra point sent adds the same amount of value, the best send is always an
+extreme: all or nothing.
+
+**Metaphor.** If every extra spoonful of sugar made tea exactly as much better, you'd pour in the whole
+bag. People stop in the middle because value bends.
+
+**Maths.** With value `U(x) = x (mu - 1)`, softmax log-odds are a straight line in `x`, so choice
+probabilities can only rise or only fall across sends. But 71% of people in Task 1 and 58% in Task 3 favour
+a middle bin. So value has to bend, and the risk penalty does that:
+
+    U(x) = x (mu - 1) - (rho / 2) x^2,    best send = (mu - 1) / rho
+
+The penalty grows with `x^2` because the amount at risk grows with `x`.
+
+### 4.2 Checking how noise scales
+
+**Plain idea.** Before you model noise, measure whether it's a fixed size or grows with the bet.
+
+**What we found.** The spread of the return grows with the send (1.0 at send 1, 5.5 at send 10), while
+the spread of return per point stays near 0.5 from send 4 up. So modelling return per point is
+reasonable, and a 10-point send moves a person's belief no more than a 5-point send does.
+
+### 4.3 Stickiness, and the shuffle baseline
+
+**Plain idea.** People repeat themselves. If a model has no way to say so, it will blame something else.
+
+**Metaphor.** Someone orders the same lunch every day out of habit. An observer who only thinks about taste
+concludes they keep re-learning that it's delicious.
+
+**What we did.** Shuffle each person's own choices across rounds, which keeps their favourites but breaks
+the order. People repeat their bin 72% of the time, against 61% shuffled. Slow drift also vanishes when
+shuffled, so the 11-point gap is an upper limit on habit alone.
+
+### 4.4 Two learning rules as one equation
+
+**Plain idea.** A constant-rate learner and a Bayesian learner both nudge a belief toward what they just
+saw. They disagree only on how big the nudge should be.
+
+**Metaphor.** A constant-rate learner is a new driver who corrects the wheel the same amount forever. A
+Bayesian learner corrects less as they grow sure of the road, and assumes the road never changes.
+
+**Maths.** For one belief, the Bayesian posterior mean with prior strength `kappa` moves by
+
+    gain = 1 / (kappa + n)
+
+while the constant-rate learner uses `alpha` every time. The nudge is `gain x error` in both, so the
+comparison isolates one thing. The shrinking gain isn't what makes it Bayesian. It's Bayesian because that
+gain is what a stated prior and likelihood imply. A rule that shrinks for no stated reason is only a
+diminishing learning rate.
+
+**Why the checks mattered.** I expected a pooled belief to shrink far faster, since every round feeds it.
+On real send sequences the two gains were almost equal (0.102 and 0.117 by round 15), so that worry
+didn't hold up.

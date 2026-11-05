@@ -25,7 +25,7 @@ cross-validation.
   It does not mean one average return rate applied to every send.
 - **Per-send** means independent beliefs about the response at each send level, `P(r | x)`.
 - Constant-rate and shrinking-rate models use the same response likelihood wherever possible.
-- Update equations and free-parameter counts: to be specified and reviewed before implementation.
+- Update equations and parameter counts: drafted in `docs/model_spec.md`, awaiting review.
 
 ## Evaluation
 
@@ -50,16 +50,29 @@ the comparison and don't force a conclusion.
 
 ## Feedback prerequisite
 
-Status: supported by behaviour in the data, not yet confirmed from the instructions.
-Evidence is in `results/01_feedback_and_order.txt` and `docs/learn.md`, entry 2.
+Cleared on 5 Nov 2026 as sufficient to proceed. The methods claim, word for word:
+
+> Behavioural analyses support the assumption that participants had access to information about
+> the preceding round's outcome before making their next decision. The effect is consistent across
+> both trustor tasks, while a future-outcome placebo shows no corresponding association.
+
+Never write that the instructions confirmed feedback. This is behavioural evidence of outcome
+exposure, not documentary evidence of what was displayed. Evidence is in
+`results/01_feedback_and_order.txt` and `docs/learn.md`, entry 2.
 
 | Question | Status |
 |---|---|
-| Feedback after every round? | Supported: last round's surprise moves the next send |
-| Saw the return, or only the payoff? | Equivalent: `payoff = E - x + r`, and `E` and `x` are known |
-| Immediate or delayed? | Supported as immediate: the effect appears at one round's lag |
-| Past outcomes stayed visible? | Unknown |
+| Information about the last outcome before the next choice? | Supported by behaviour |
+| Saw the return, the payoff, or both? | Unknown; kept explicit in the observation model |
+| Past outcomes stayed visible? | Unknown; a limitation, not a blocker. The models need sequential updating, not retrieval |
 | Task order | Unknown from the data; a related deposit lists trustor, trustee, changed endowments |
+
+## Interpretation limits
+
+- The simulator validation shows the AI's conditional response distribution is reproduced. It says
+  nothing about human adaptation to that distribution.
+- Task 3 rules on Task 1 scored p = 0.054: a borderline result, not a clean pass.
+- A model winning on held-out likelihood is not evidence for its mechanism unless recovery supports it.
 
 ## Schedule
 

@@ -377,3 +377,208 @@ minus a discount for how wild the gamble is.
 **Posterior mean vs posterior predictive.** Using only the mean is like asking "what's my best guess?"
 Using the predictive is like asking "what's my best guess, and how unsure am I?" Our Bayesian models ask
 the first when choosing, so uncertainty changes how fast they learn but not what they pick.
+
+---
+
+## 5. The four learners
+
+**Where they live:** `src/hidden_partner/models.py`. The `Learner` class holds beliefs, values
+actions, and updates. The same class drives both fitting and simulation, so recovery tests the real
+code. Equations are in `docs/model_spec.md`, and `tests/test_models.py` checks them.
+
+All four do the same loop each round: predict, value, choose, see the outcome, update. They only
+differ in what a belief is about, and how far one outcome moves it.
+
+### 5.1 M2: constant gain, per-send (Q-learning)
+
+**Plain idea.** Keep a separate note for each send level, and every time you try one, nudge that note
+a fixed fraction of the way toward what happened.
+
+**Metaphor.** You rate three restaurants. Each visit moves that restaurant's score part of the way
+toward tonight's meal, and tonight's meal says nothing about the other two.
+
+**Maths.**
+
+    w_a <- w_a + alpha (y - w_a)
+
+The bracket is the prediction error, and `alpha` is how much of it you absorb. Unroll this and old
+outcomes fade by `(1 - alpha)` each visit, so with `alpha = 0.3` an outcome three visits back keeps
+about a third of its weight:
+
+    w_n = (1 - alpha)^n w_0  +  sum over k of alpha (1 - alpha)^(n - k) y_k
+
+Recent evidence counts more, which is the right habit if the world might be changing.
+
+**Link to RL.** This is Q-learning for a one-step problem. There is no next state, so the usual
+`gamma max Q(s', a')` term disappears, and the update is the bare delta rule. The test
+`test_m2_is_q_learning_at_the_bin_value_point` proves the equivalence at send 10.
+
+**Going wrong.** Untried options never improve. If you never go back to a restaurant after one bad
+meal, its score stays bad forever.
+
+### 5.2 M1: constant gain, pooled
+
+**Plain idea.** Same fixed nudge, but now you're learning traits of the partner, not notes per send.
+
+**Metaphor.** Rating a chef, not dishes. One great dish lifts your opinion of the whole menu.
+
+**Maths.** The belief is two numbers: generosity `g` and responsiveness `b`.
+
+    mu(x) = g + b s c(x)
+    m <- m + alpha psi e / (psi' psi)
+
+Dividing by `psi' psi` makes the prediction at the chosen send move by exactly `alpha` of the error,
+however the features are scaled. So `alpha` means the same thing here as in M2. The rest of the change
+spills onto other sends, in proportion to how alike their features are. This is called normalised LMS,
+and it's the same idea as gradient descent on squared error with a tidy step size.
+
+**Going wrong.** The line can't bend, and the real response is U-shaped. M1 will always get something
+wrong at low sends.
+
+### 5.3 M4: Bayesian, per-send
+
+**Plain idea.** Keep a separate belief per send level, and let each one get harder to move the more
+evidence it has.
+
+**Metaphor.** A batting average. In a player's first game one hit changes it a lot. After a thousand
+at-bats, one hit barely shows.
+
+**Maths.** With a Normal prior and Normal likelihood, the posterior mean is a weighted average of the
+prior and the data. Treat the prior as `kappa` imaginary observations:
+
+    w_n = (kappa g0 + y_1 + ... + y_n) / (kappa + n)
+
+Subtract `w_(n-1)` and it becomes the update itself:
+
+    w_n = w_(n-1) + (y_n - w_(n-1)) / (kappa + n)
+
+This is the delta rule again, with `alpha` replaced by `1 / (kappa + n)`. Every observation ends up
+with equal weight, which is why the order of events doesn't matter: `test_bayesian_order_does_not_matter`
+checks this, and `test_constant_gain_order_does_matter` checks the opposite for M2.
+
+**Why this is Bayesian.** That gain falls out of a stated prior and likelihood. It isn't chosen. It's
+also the right rule only if the partner never changes.
+
+### 5.4 M3: Bayesian, pooled
+
+**Plain idea.** Hold a whole cloud of belief over the partner's two traits, and shrink it as evidence
+comes in, more in the directions you've tested.
+
+**Metaphor.** You're working out a rectangle's width and height, but you can only measure its perimeter.
+A measurement narrows a combination of the two, not each separately. Measuring in a different way
+narrows a different combination.
+
+**Maths.** This is recursive Bayesian linear regression, also known as a Kalman filter with no drift:
+
+    K = P psi / (psi' P psi + 1)        how much to trust this observation
+    m <- m + K e                        move the belief
+    P <- P - K psi' P                   become less unsure, in this direction
+
+`P` is uncertainty. If `P` is large, `K` is large, so a surprise moves you a lot. Each observation shrinks
+`P`, so learning slows by itself. Because `P` carries correlations between traits, it also changes how one
+send's outcome spreads to others. `test_bayesian_update_matches_the_batch_posterior` confirms that stepping
+through rounds lands exactly on the formula that uses all the data at once.
+
+### 5.5 What the four share, and when they're the same
+
+Round 1 is identical in all four. And if learning is switched off, they collapse into one model, because
+nothing ever moves. `test_models_collapse_without_learning` checks that. So someone who barely learns can't
+be classified, by any method.
+
+The value function is the same too:
+
+    U(a) = x (mu(x) - 1) - (rho / 2) x^2
+
+Then choice is a softmax, with `tau` added to whichever action was picked last time:
+
+    P(a) proportional to exp( beta U(a) + tau 1[a = last action] )
+
+`beta` is decisiveness and `tau` is the pull of repeating. Round 1 has no last action, so no `tau`.
+
+---
+
+## 6. Fitting and recovery
+
+**Where they live:** `src/hidden_partner/fitting.py`, `src/hidden_partner/simulate.py`,
+`scripts/04_recovery_fits.py`, `scripts/05_recovery_report.py`.
+
+### 6.1 Maximum likelihood
+
+**Plain idea.** Find the settings that make what the person did least surprising.
+
+**Metaphor.** Tuning a radio. You turn the dials until the signal is clearest.
+
+**Maths.** The model gives a probability to each real choice. Multiply them, and take the log so the
+product becomes a sum and doesn't underflow:
+
+    LL(theta) = sum over t of log P(a_t | history_t, theta)
+
+Beliefs update on every round. `scored` only controls which choices count toward the total, which is
+how held-out rounds work: they keep learning, but they don't get to tune the dials.
+
+### 6.2 Parameter transforms and multiple starts
+
+**Transforms.** `beta` must be positive and `alpha` must be between 0 and 1. So the optimiser searches over
+`log(beta)` and `logit(alpha)`, which can be any number, and we convert back. It's like walking on a flat map
+of a curved surface.
+
+**Multiple starts.** An optimiser only walks downhill, so it stops at the nearest valley. Dropping it in 4
+random places and keeping the best makes it less likely to miss the deepest one.
+
+### 6.3 Parameter recovery and model recovery
+
+**Plain idea.** Before trusting a measuring tool on people, test it on fakes where you know the answer.
+
+**Metaphor.** Before weighing a mystery object, you put a known 1 kg weight on the scale.
+
+**Parameter recovery.** Simulate from known parameters, refit, and compare. Spearman asks whether people
+keep their order, bias asks whether estimates run high or low on average, and RMSE gives the typical miss.
+Spearman alone isn't enough: a scale that always reads double keeps everyone's order perfectly.
+
+**Model recovery.** Simulate from each model, fit all of them, and count which wins. The result is a
+confusion matrix. Ideally the diagonal dominates. All four models have the same number of parameters here,
+so the winner is just the highest likelihood.
+
+**Why this matters more than the final fit.** If the fitting can't tell M2 from M4 on fake data where the
+answer is known, it can't do so on people, however confident the numbers look.
+
+### 6.4 Ties, and why "first in the list" is a hidden bias
+
+**Plain idea.** When two options score the same, your tie-break rule is making the decision, even if you
+never meant it to.
+
+**What happened.** When learning vanishes in a fit, the models become the same model and score the same. A
+plain "pick the highest" then always chose whichever was listed first, which quietly favoured M1 and M2.
+About 17% of agents were near-tied. Now anything within 0.01 of the best shares the credit equally.
+
+### 6.5 What recovery found, and how to read it
+
+**Plain idea.** Fifteen rounds can see some things and not others. That's a real finding about the data.
+
+| Rounds | All four (chance 0.25) | Generalisation (chance 0.5) | Dynamics (chance 0.5) |
+|---|---|---|---|
+| 15 | 0.50 | 0.77 | 0.62 |
+| 20 | 0.55 | 0.78 | 0.67 |
+| 40 | 0.61 | 0.83 | 0.71 |
+
+**Generalisation is easy to see.** Pooled learners change their opinion of untried sends and per-send
+learners don't, and that shows up in choices quickly.
+
+**Dynamics is hard to see.** A Bayesian gain falling from 0.38 to 0.10 over 15 rounds has an average near
+0.2, so a constant gain of 0.2 can stand in for it.
+
+**Metaphor.** Picture a car slowing down gently over a short stretch of road. A car holding a steady
+middling speed covers nearly the same ground, so from two photos you can't tell them apart. You need a
+longer road.
+
+**It isn't symmetric.** Bayesian agents go to the right dynamics less often than constant-gain agents do.
+A constant gain can imitate a shrinking one, but a shrinking gain can't imitate a large constant gain, because
+it must keep slowing. So M1 and M2 are more flexible, even with the same parameter count. In real data,
+expect them to win somewhat more often than people truly behave that way.
+
+**Parameters.** `rho` recovers best (0.71 to 0.84). `beta` is rough (0.62 to 0.68) and runs about twice too
+high, because when a model predicts every choice, the fit pushes `beta` to its limit. `tau` (0.30 to 0.43) and
+the gain (0.42 to 0.53) are too noisy to compare individuals.
+
+**Going wrong.** `g0` was held at its true value in these runs, and simulated agents send less and repeat less
+than real people, so this is a first look. It gets rerun at fitted values.

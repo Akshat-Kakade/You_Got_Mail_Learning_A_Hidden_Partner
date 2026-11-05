@@ -357,3 +357,23 @@ diminishing learning rate.
 **Why the checks mattered.** I expected a pooled belief to shrink far faster, since every round feeds it.
 On real send sequences the two gains were almost equal (0.102 and 0.117 by round 15), so that worry
 didn't hold up.
+
+### 4.5 Zero returns, and why utility has to be chosen carefully
+
+**Zero returns.** Sending 4 or more, a zero means the AI defected, about 10% of the time. At sends 1 to 3,
+zeros reach 24% to 35%, because some strategies return little or nothing at small sends. So a 0 after sending 2 is weak
+evidence of betrayal, while a 0 after sending 8 is strong evidence. The models treat them alike, which is
+a known simplification.
+
+**Why exponential utility.** Power and log utility only work for positive amounts. The learner's assumed
+Normal payoff has no lower limit, so they break. Exponential utility works on any number, and with a
+Normal payoff the answer has a clean form:
+
+    certainty equivalent = mean - (lambda / 2) x variance
+
+**Metaphor.** The certainty equivalent is the sure amount you'd swap a gamble for. It's the average,
+minus a discount for how wild the gamble is.
+
+**Posterior mean vs posterior predictive.** Using only the mean is like asking "what's my best guess?"
+Using the predictive is like asking "what's my best guess, and how unsure am I?" Our Bayesian models ask
+the first when choosing, so uncertainty changes how fast they learn but not what they pick.

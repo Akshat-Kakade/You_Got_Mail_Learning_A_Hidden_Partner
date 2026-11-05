@@ -1,7 +1,8 @@
 # Frozen design
 
-Frozen 5 Nov 2026, before any learning model was written or fitted. No further extensions until
-the four basic models survive parameter and model recovery. This updates the draft plan in
+This is a learning project and a CaCTüS application piece, not a research submission, so checks stay
+light. Frozen 5 Nov 2026, before any learning model was written or fitted. No further extensions until
+the four basic models have been through parameter and model recovery. This updates the draft plan in
 `Hidden_Partner_Project_Plan.pdf`, which stays as written. Section 7 of that plan calls the partner
 scripted: the data show it reacts to the current send and has no memory across rounds.
 
@@ -37,8 +38,9 @@ cross-validation.
 
 Models are compared with AIC/BIC, held-out log-likelihood, parameter recovery, model recovery and
 sensitivity analysis. Tasks 1 and 3 are never concatenated into one 40-round trajectory. Analyses
-stay paired: 302 people in two conditions, not 604 people. If four-model recovery is poor, simplify
-the comparison and don't force a conclusion.
+stay paired: 302 people in two conditions, not 604 people. The four models are a structured comparison,
+not a clean factorial, because the two dimensions interact. If recovery is poor, find out why and report
+what the data can't separate.
 
 ## Rules
 

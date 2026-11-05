@@ -64,6 +64,15 @@ def noise_scale(rounds):
     return table.groupby("send").mean().round(2).T.to_string()
 
 
+def zero_returns(rounds):
+    """How often a send comes back as exactly 0, and how much of that is outright defection."""
+    sent = rounds[rounds["send"] > 0]
+    table = sent.groupby("send").agg(
+        zero=("returned", lambda r: (r == 0).mean()), defected=("defected", "mean")
+    )
+    return table.round(3).T.to_string()
+
+
 def repeat_rate(bins, rng):
     """Share of rounds repeating last round's bin, against the same choices shuffled."""
     real = (bins[:, 1:] == bins[:, :-1]).mean()
@@ -112,6 +121,7 @@ def main():
         lines.extend([f"\n=== {title}", str(body)])
 
     report("Spread by send (averaged over profiles)", noise_scale(rounds))
+    report("Share of zero returns, and defections, by send", zero_returns(rounds))
     report("Partner's response curve: return per point sent", response_shape_fits(rules))
 
     shares = rounds.groupby("task")["bin"].value_counts(normalize=True).unstack().round(3)

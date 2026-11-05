@@ -1,0 +1,91 @@
+
+=== Task 1: send after defections, sent>0 last round (n=4370, people=292)
+              coef     se      t
+defect_lag1 -0.263  0.130 -2.020
+defect_lag2 -0.162  0.122 -1.323
+defect_lag3 -0.051  0.124 -0.408
+defect_now   0.012  0.122  0.099
+
+=== Task 1: placebo, a defection that has not happened yet (n=4102)
+              coef     se      t
+defect_lag1 -0.293  0.134 -2.186
+defect_next  0.001  0.104  0.013
+
+=== Task 1: sent 0 last round, so a defection was unnoticeable (n=462, people=92)
+              coef     se      t
+defect_lag1 -0.016  0.203 -0.078
+
+=== Task 1: size of last return, no defection (n=3943)
+                coef     se      t
+surprise_lag1  0.061  0.013  4.536
+
+=== Task 1: mean change in send, after no defection (0) vs defection (1)
+              mean  count
+defect_lag1              
+0.0         -0.026   3943
+1.0         -0.407    427
+
+=== Task 3: send after defections, sent>0 last round (n=3790, people=285)
+              coef     se      t
+defect_lag1 -0.217  0.136 -1.602
+defect_lag2 -0.382  0.132 -2.898
+defect_lag3 -0.112  0.116 -0.961
+defect_now  -0.019  0.134 -0.143
+
+=== Task 3: placebo, a defection that has not happened yet (n=3561)
+              coef     se      t
+defect_lag1 -0.164  0.128 -1.282
+defect_next  0.117  0.112  1.052
+
+=== Task 3: sent 0 last round, so a defection was unnoticeable (n=1042, people=151)
+              coef    se      t
+defect_lag1  0.052  0.16  0.325
+
+=== Task 3: size of last return, no defection (n=3375)
+                coef     se      t
+surprise_lag1  0.045  0.015  3.087
+
+=== Task 3: mean change in send, after no defection (0) vs defection (1)
+              mean  count
+defect_lag1              
+0.0         -0.187   3375
+1.0         -0.455    415
+
+=== Task 1: change in send on past news; `news` and `news_next` are placebos (n=4530, people=302)
+             coef      se       t
+news_lag1  0.0443  0.0116  3.8140
+news_lag2  0.0060  0.0095  0.6348
+news_lag3 -0.0093  0.0085 -1.0850
+news       0.0052  0.0091  0.5758
+news_next  0.0016  0.0087  0.1884
+
+=== Task 3: change in send on past news; `news` and `news_next` are placebos (n=4530, people=302)
+             coef      se       t
+news_lag1  0.0442  0.0110  4.0209
+news_lag2  0.0148  0.0091  1.6343
+news_lag3 -0.0137  0.0114 -1.1952
+news      -0.0147  0.0101 -1.4540
+news_next -0.0064  0.0104 -0.6206
+
+=== Pooled: change in send on past news; `news` and `news_next` are placebos (n=9060, people=302)
+             coef      se       t
+news_lag1  0.0444  0.0088  5.0720
+news_lag2  0.0103  0.0067  1.5373
+news_lag3 -0.0112  0.0068 -1.6463
+news      -0.0040  0.0070 -0.5674
+news_next -0.0021  0.0067 -0.3068
+
+=== Task order: does one task's randomness reach the other's opening?
+                                  test   coef     se      t
+0  Task 1 defections -> Task 3 opening  4.623  2.811  1.645
+1  Task 3 defections -> Task 1 opening  0.067  2.400  0.028
+
+=== Interleaving check, outcome send_t1
+                 coef     se      t
+defect_lag1_t1 -0.196  0.111 -1.770
+defect_lag1_t3 -0.169  0.101 -1.674
+
+=== Interleaving check, outcome send_t3
+                 coef     se      t
+defect_lag1_t3 -0.129  0.101 -1.274
+defect_lag1_t1  0.059  0.110  0.540

@@ -17,9 +17,9 @@ def send_sampler(rounds: pd.DataFrame) -> list:
     return sampler
 
 
-def simulate_agent(model, params, g0, rules, profile, n_rounds, sampler, rng, ai_endowment=0):
+def simulate_agent(model, params, g0, rules, profile, n_rounds, sampler, rng, ai_endowment=0, lapse=0.0):
     """Return the sends and returns of one simulated participant."""
-    learner = Learner(model, params, g0)
+    learner = Learner(model, params, g0, lapse)
     game = TrustGame(rules, profile, 10, ai_endowment, rng)
     sends, returns = [], []
     for _ in range(n_rounds):

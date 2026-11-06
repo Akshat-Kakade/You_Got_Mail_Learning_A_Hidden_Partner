@@ -226,3 +226,42 @@ def test_fitting_beats_a_poor_guess_and_finds_beta_on_long_data(world):
     fit = fit_person(M2, G0, sends, returns, rng)
     assert fit.log_likelihood >= log_likelihood(M2, truth, G0, sends, returns) - 1e-6
     assert fit.params.beta == pytest.approx(3.0, rel=0.5)
+
+
+@pytest.mark.parametrize("model", MODELS)
+def test_lapse_sets_a_floor_and_keeps_probabilities_valid(model):
+    learner = Learner(model, Params(20.0, 0.05, 6.0, 2.0 if model.bayesian else 0.3), G0, lapse=0.05)
+    for send, returned in HISTORY:
+        probabilities = learner.choice_probabilities()
+        assert probabilities.sum() == pytest.approx(1.0)
+        assert probabilities.min() >= 0.05 / 4 - 1e-12
+        learner.update(outcome(send, returned))
+
+
+def test_zero_lapse_changes_nothing():
+    sends, returns = np.array([10, 7, 5]), np.array([14, 0, 6])
+    params = params_for(M3)
+    assert log_likelihood(M3, params, G0, sends, returns, lapse=0.0) == pytest.approx(
+        log_likelihood(M3, params, G0, sends, returns)
+    )
+
+
+def test_lapse_blends_with_a_uniform_choice():
+    plain = Learner(M2, params_for(M2), G0).choice_probabilities()
+    blended = Learner(M2, params_for(M2), G0, lapse=0.1).choice_probabilities()
+    assert blended == pytest.approx(0.9 * plain + 0.1 / 4)
+
+
+def test_lapse_does_not_change_learning():
+    plain = Learner(M3, params_for(M3), G0)
+    lapsing = Learner(M3, params_for(M3), G0, lapse=0.05)
+    for send, returned in HISTORY:
+        plain.update(outcome(send, returned))
+        lapsing.update(outcome(send, returned))
+    assert lapsing.mean == pytest.approx(plain.mean)
+
+
+def test_lapse_caps_the_cost_of_one_surprise():
+    sends, returns = np.array([0]), np.array([0])
+    certain = Params(20.0, 0.001, 0.0, 0.3)  # strongly favours sending, so sending 0 is a shock
+    assert log_likelihood(M2, certain, 2.0, sends, returns, lapse=0.05) >= np.log(0.05 / 4)

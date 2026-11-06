@@ -1,0 +1,18 @@
+Rows true, columns best fit
+              M1     M2     M3     M4
+generator                            
+M1         0.384  0.150  0.260  0.206
+M2         0.256  0.333  0.168  0.243
+M3         0.300  0.275  0.249  0.177
+M4         0.214  0.299  0.142  0.344
+
+Generalisation accuracy 0.603, dynamics accuracy 0.509
+Near-tied agents 0.386
+
+Do agents look like people? (real Task 1: mean send 5.5, repeat 0.72)
+           mean_send  repeat_rate
+generator                        
+M1              4.87         0.70
+M2              5.40         0.71
+M3              4.94         0.67
+M4              5.46         0.68

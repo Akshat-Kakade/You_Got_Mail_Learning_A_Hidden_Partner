@@ -1,0 +1,25 @@
+=== Parameters by profile (Kruskal-Wallis, lapse fits)
+32 tests, smallest p 0.0010, below 0.05: 4, below 0.05 after correction: 2
+ task model parameter      p  p_adjusted
+    1    M3      gain 0.0010      0.0332
+    1    M1      gain 0.0013      0.0404
+    3    M1      beta 0.0283      0.9069
+    3    M4      gain 0.0318      1.0000
+    3    M3      beta 0.0810      1.0000
+
+=== Mean send by profile
+profile  Competitive_AI  Exploratory_AI  Social_AI
+task                                              
+1                  5.58            5.49       5.57
+3                  4.40            4.71       4.96
+Kruskal-Wallis p by task: {1: np.float64(0.9804), 3: np.float64(0.4637)}
+
+=== Task 1 strategy mix across rounds 2-20
+chi2 p: 0.0053
+after correcting for about 30 tests: 0.158
+p per strategy: {1: np.float64(0.0839), 2: np.float64(0.0318), 3: np.float64(0.1031), 4: np.float64(0.0476)}
+largest standardised residual: 2.84
+share range across rounds: {1: (0.185, 0.33), 2: (0.201, 0.335), 3: (0.199, 0.316), 4: (0.185, 0.325)}
+return drift per round: -0.0052
+drift p: 0.43
+mean return shift by round, min and max: (-0.39, 0.33)

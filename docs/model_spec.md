@@ -65,6 +65,9 @@ replacing `x̄^2` with `x̄^2 (1 + psi' P psi)`. It's left out of the primary mo
 
     P(a_t = a) proportional to exp( beta U_(t-1)(a) + tau 1[a = a_(t-1)] )
 
+In the main analysis the final probabilities also include a fixed 5% lapse, `(1 - 0.05) P(a) + 0.05 / 4`. It was added
+after the raw fits, as recorded in `docs/design.md`.
+
 Round 1 has no previous action, so the `tau` term is simply left out. `tau` describes persistence in
 choices. It doesn't prove a separate habit mechanism.
 

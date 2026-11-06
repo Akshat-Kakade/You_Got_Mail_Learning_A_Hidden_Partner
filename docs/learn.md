@@ -582,3 +582,159 @@ the gain (0.42 to 0.53) are too noisy to compare individuals.
 
 **Going wrong.** `g0` was held at its true value in these runs, and simulated agents send less and repeat less
 than real people, so this is a first look. It gets rerun at fitted values.
+
+---
+
+## 7. The real data, and what went wrong first
+
+**Where it lives:** `scripts/06_fit_real_data.py`, `scripts/07_results_report.py`,
+`src/hidden_partner/evaluation.py`, results in `results/07_results_report.txt`.
+
+### 7.1 Held-out scoring on a sequence
+
+**Plain idea.** Freeze the person's settings, but let their beliefs keep learning, and ask how well the
+model calls each next choice.
+
+**Metaphor.** Weather forecasting. You fix the forecast method, but each morning it still gets to see
+yesterday's weather. You're testing the method, not asking it to guess all five days at once.
+
+**Maths.** Parameters come from rounds 1-15. Then
+
+    held-out LL = sum over t = 16..20 of log P(a_t | everything before t, frozen parameters)
+
+The blocked version fits on rounds 6-20 and scores 1-5. That's fair because beliefs run forward from round 1,
+and no choice from those rounds tuned the parameters.
+
+### 7.2 Always include a dumb baseline
+
+**Plain idea.** A clever model has to beat "they'll do what they usually do", or it hasn't earned anything.
+
+**What happened.** On the mean score, all four models lost to it. That's what baselines are for: without
+one, a score of -6 would have looked fine.
+
+### 7.3 Overconfidence, and why log-likelihood punishes it
+
+**Plain idea.** Log score barely rewards being right with confidence, but it savages being wrong with confidence.
+
+**Metaphor.** A weather app that says "0% chance of rain" and then it pours. One such day ruins its record
+more than a hundred good days can repair.
+
+**Maths.** Being right at 0.9 instead of 0.5 earns `log 0.9 - log 0.5 = +0.59`. Being wrong at
+`p = 0.000001` costs `log 0.000001 = -13.8`. With 15 training choices, someone who looks perfectly consistent
+gets a huge `beta`, then one change of mind in rounds 16-20 costs more than everything else combined.
+
+**How to spot it.** The mean is far worse than the median. Here the means were about -6 to -8 and the medians
+about -3 to -4, with 6% to 11% of people below -20.
+
+### 7.4 The lapse: a small allowance for "anything can happen"
+
+**Plain idea.** Assume that some small share of the time, a person picks at random.
+
+**Maths.**
+
+    P'(a) = (1 - epsilon) P(a) + epsilon / 4
+
+No choice can now fall below `epsilon / 4`, so no single surprise can be catastrophic. Applied after fitting, it's
+only a stress test. Putting it inside the fit is the honest version, and 7.8 shows what that changed.
+
+### 7.5 Better on training, worse on new data
+
+**Plain idea.** The model with the best fit isn't always the one that predicts best.
+
+**Metaphor.** A student who memorises past papers scores perfectly on those and worse on a new exam.
+
+**What happened.** Per-send models fitted training rounds better, and M4 had the best AIC in both tasks. But pooled
+models predicted held-out rounds better. This is a concrete case of equal parameter counts hiding unequal flexibility:
+AIC gave no penalty for the extra freedom in per-send beliefs, and the held-out test caught it.
+
+### 7.6 The bootstrap for paired differences
+
+**Plain idea.** To see how sure you are about an average, re-run your study many times by redrawing people.
+
+**Metaphor.** You can't survey the town again, so you treat your 302 people as a small model town and draw
+from it repeatedly, with replacement.
+
+**Maths.** For each person take `d_i = score_A - score_B`. Resample 302 people, average their `d`, and repeat 5,000
+times. The middle 95% of those averages is the interval. Differences are taken within a person first, because
+people vary far more from each other than models do.
+
+### 7.7 Reading "beliefs" that aren't beliefs
+
+Fitted beliefs about return per point (1.27 to 1.81) ran well above the real values (1.0 to 1.35), and were
+nearly flat across sends. Between about a third and 60% of people, depending on the model, fitted as barely learning. So `g0` and `rho` are
+mostly placing each person's stable preferred send, not measuring what they believe. A number being called a belief in
+the model doesn't make it one.
+
+### 7.8 What the lapse refit changed, and why
+
+**What was done.** `scripts/06_fit_real_data.py` with `FIT_LAPSE=0.05` fits all four models with a fixed 5% lapse
+inside the likelihood. The results are in `results/07_results_lapse.txt`, and the raw fits are kept beside them.
+
+**It tamed the scores.** The worst possible score over five choices is now `5 log(0.0125) = -21.9`, against about -110
+before. Mean held-out scores rose from -6 to -8 up to about -4 to -4.5, level with the baseline.
+
+**It did not tame `beta`.** I expected the lapse to stop `beta` running away, and that was wrong. The share at the limit
+went up (27% to 37%, from 22% to 32%). The reason is that the lapse removes the penalty for extreme confidence: if a
+surprise can only cost so much, being very sure is cheap. The lapse protects the score. It doesn't regularise the
+parameter. A prior on `beta` would do that.
+
+**Metaphor.** A seatbelt doesn't make you drive slower. If anything, people with seatbelts drive a little faster.
+
+**A stress test isn't the same as the real thing.** Blending in a lapse after fitting suggested pooled models won clearly
+(+0.53 and +0.43). The real refit gave +0.09 (-0.14, 0.32) in Task 1 and +0.26 (0.01, 0.52) in Task 3. Refitting lets
+everything else move too. `g0` fell from 1.6-1.9 to 1.3-1.6, and fitted beliefs got closer to real returns, with per-send
+models gaining most. So part of the pooled advantage was per-send models being hurt by overconfidence, not pooling being
+better.
+
+**The lesson.** A result that only survives under one scoring choice isn't a finding yet. Check it by changing the model,
+not just by rescoring its old output.
+
+**The small recovery check.** Agents played with a 5% lapse and were fitted with one, at three settings per model. `rho` and
+the gain landed near the truth, even at 15 rounds. `beta` ran high at 15 rounds and came back toward the truth at 100, and
+`tau` was noisy at 15 and close to right at 100. So the lapse code works, and the trouble with `beta` and `tau` comes from short games.
+
+---
+
+## 8. The last checks
+
+**Where it lives:** `scripts/09_recovery_at_fitted_values.py`, `scripts/10_robustness.py`, `scripts/run_all.sh`.
+
+### 8.1 Recovery at fitted values
+
+**Plain idea.** The first recovery tested the tool on agents I invented. This one builds each fake agent from one
+real person's fitted settings, so the test matches the people it will be used on.
+
+**Metaphor.** Testing a bridge with trucks the size of real traffic, not trucks you picked for convenience.
+
+**What it showed.** Agents now looked like people, and identification nearly vanished: generalisation accuracy fell from 0.77 to
+0.60, and dynamics from 0.62 to 0.51, which is chance. The invented agents learned faster than people do. When learning is weak,
+the four models are nearly the same model (5.5), so 39% of agents were near-tied. This is the result that explains the tie on real
+data. It also shows why recovery has to be run at realistic values: the first run looked better than the truth.
+
+### 8.2 Correcting for many tests
+
+**Plain idea.** If you take 30 shots at a 5% target, a hit is likely by luck alone. So each shot has to clear a higher bar.
+
+**Maths.** The Bonferroni correction multiplies each p-value by the number of tests:
+
+    p_adjusted = min(1, p x number of tests)
+
+The Task 1 strategy anomaly went from 0.005 to about 0.16 once I allowed for roughly 30 tests. It also wasn't driven by
+any one strategy, and returns didn't drift across rounds (p = 0.43). So it's most likely chance, and it doesn't touch the
+assumption that the partner is stable.
+
+### 8.3 Comparing three groups with Kruskal-Wallis
+
+**Plain idea.** Line everyone up from lowest to highest, then ask whether one group sits systematically higher in the line.
+
+**Why ranks.** Fitted gains pile up at their limits and have long tails. Ranks only care about order, so a few extreme
+values can't dominate.
+
+**What we found.** Almost nothing differs by profile, including mean send. The exception is the gain in pooled models in
+Task 1: people facing the Social AI learn most. About 41% of them fit as barely learning, against about 66% for
+Competitive. It survives correction, but it's exploratory, it's Task 1 only, and the gain is a rough parameter.
+
+### 8.4 One command to rebuild everything
+
+`scripts/run_all.sh` reruns the project from the raw data. If a result can't be rebuilt, you can't really trust it, and
+you'll also forget how you got it.

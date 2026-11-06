@@ -75,9 +75,10 @@ class Params:
 class Learner:
     """One simulated mind: holds beliefs, values actions, and updates on what it can see."""
 
-    def __init__(self, model: Model, params: Params, g0: float):
+    def __init__(self, model: Model, params: Params, g0: float, lapse: float = 0.0):
         self.model = model
         self.params = params
+        self.lapse = lapse  # chance of a random choice, whatever the values say
         self.action_features = np.array([model.features(x) for x in ACTION_SENDS[1:]])
         n_features = self.action_features.shape[1]
         self.mean = np.array([g0, 0.0]) if model.pooled else np.full(n_features, g0)
@@ -101,7 +102,7 @@ class Learner:
             logits[self.last_action] += self.params.tau
         logits -= logits.max()
         weights = np.exp(logits)
-        return weights / weights.sum()
+        return (1 - self.lapse) * weights / weights.sum() + self.lapse / N_ACTIONS
 
     def update(self, outcome: Visible) -> None:
         """Learn from a finished round. Sending 0 gives no y, so no belief changes."""

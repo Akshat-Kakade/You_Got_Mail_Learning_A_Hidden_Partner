@@ -69,6 +69,13 @@ exposure, not documentary evidence of what was displayed. Evidence is in
 | Past outcomes stayed visible? | Unknown; a limitation, not a blocker. The models need sequential updating, not retrieval |
 | Task order | Unknown from the data; a related deposit lists trustor, trustee, changed endowments |
 
+## Main analysis
+
+Frozen 6 Nov 2026 after both fits were seen: the fit with a fixed 5% lapse inside the likelihood
+(`results/real_lapse_*`, `results/07_results_lapse.txt`) is the main analysis. The lapse was added after the raw
+results, because of overconfidence, so it is a disclosed change, not part of the original plan. The raw fits
+(`results/real_*`, `results/07_results_report.txt`) stay as the comparison and are reported alongside.
+
 ## Interpretation limits
 
 - The simulator validation shows the AI's conditional response distribution is reproduced. It says

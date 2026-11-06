@@ -1,0 +1,204 @@
+
+=== Shared g0 (grid runs 1.0 to 2.0)
+ task model  g0      ll
+    1    M1 1.3 -2364.2
+    1    M2 1.7 -2217.0
+    1    M3 1.7 -2322.7
+    1    M4 1.7 -2167.8
+    3    M1 1.8 -2337.7
+    3    M2 1.8 -2274.6
+    3    M3 1.6 -2330.0
+    3    M4 1.9 -2221.1
+
+=== Held-out, rounds 16-20: scores
+ task    model  mean_ll  median_ll  prob_per_choice  vs_baseline    low   high  very_surprised
+    1       M1   -6.100     -3.392            0.295       -1.973 -3.212 -0.930           0.063
+    1       M2   -7.871     -4.171            0.207       -3.744 -5.367 -2.377           0.106
+    1       M3   -6.806     -3.720            0.256       -2.679 -4.119 -1.413           0.073
+    1       M4   -7.523     -3.683            0.222       -3.396 -4.965 -2.044           0.089
+    1 baseline   -4.127     -4.134            0.438        0.000  0.000  0.000           0.000
+    3       M1   -6.226     -3.273            0.288       -2.221 -3.500 -1.089           0.063
+    3       M2   -6.897     -3.572            0.252       -2.892 -4.257 -1.689           0.076
+    3       M3   -5.660     -3.115            0.322       -1.654 -2.804 -0.650           0.056
+    3       M4   -6.279     -3.650            0.285       -2.273 -3.381 -1.292           0.066
+    3 baseline   -4.005     -3.906            0.449        0.000  0.000  0.000           0.000
+
+=== Held-out, rounds 16-20: paired contrasts
+ task                                   contrast   mean    low   high  median  people
+    1 Pooled - per-send, constant gain (M1 - M2)  1.771  0.875  2.670   0.053     302
+    1      Pooled - per-send, Bayesian (M3 - M4)  0.717 -0.025  1.508   0.000     302
+    1                 Pooled - per-send, average  1.244  0.510  2.028   0.000     302
+    1      Bayesian - constant, pooled (M3 - M1) -0.705 -1.432 -0.000  -0.006     302
+    1    Bayesian - constant, per-send (M4 - M2)  0.348 -0.015  0.740   0.000     302
+    1               Bayesian - constant, average -0.179 -0.606  0.244   0.000     302
+    3 Pooled - per-send, constant gain (M1 - M2)  0.671 -0.166  1.566   0.002     302
+    3      Pooled - per-send, Bayesian (M3 - M4)  0.619 -0.091  1.335   0.003     302
+    3                 Pooled - per-send, average  0.645 -0.096  1.416   0.000     302
+    3      Bayesian - constant, pooled (M3 - M1)  0.566  0.216  0.979   0.000     302
+    3    Bayesian - constant, per-send (M4 - M2)  0.619  0.192  1.115   0.000     302
+    3               Bayesian - constant, average  0.593  0.282  0.947   0.000     302
+
+=== Blocked, rounds 1-5: scores
+ task    model  mean_ll  median_ll  prob_per_choice  vs_baseline     low   high  very_surprised
+    1       M1   -9.799     -5.328            0.141       -4.826  -6.393 -3.406           0.132
+    1       M2  -12.652     -5.228            0.080       -7.679  -9.951 -5.647           0.172
+    1       M3  -13.745     -5.942            0.064       -8.772 -11.015 -6.650           0.195
+    1       M4  -13.341     -5.211            0.069       -8.367 -10.748 -6.204           0.179
+    1 baseline   -4.973     -4.602            0.370        0.000   0.000  0.000           0.000
+    3       M1  -11.797     -5.519            0.094       -6.957  -9.072 -5.012           0.162
+    3       M2  -11.238     -4.978            0.106       -6.399  -8.717 -4.295           0.136
+    3       M3  -13.417     -5.880            0.068       -8.578 -10.914 -6.457           0.199
+    3       M4  -11.671     -4.947            0.097       -6.832  -9.141 -4.736           0.146
+    3 baseline   -4.839     -4.410            0.380        0.000   0.000  0.000           0.000
+
+=== Blocked, rounds 1-5: paired contrasts
+ task                                   contrast   mean    low   high  median  people
+    1 Pooled - per-send, constant gain (M1 - M2)  2.853  1.374  4.434  -0.000     302
+    1      Pooled - per-send, Bayesian (M3 - M4) -0.404 -2.243  1.452  -0.000     302
+    1                 Pooled - per-send, average  1.224 -0.211  2.802  -0.000     302
+    1      Bayesian - constant, pooled (M3 - M1) -3.946 -5.551 -2.437  -0.024     302
+    1    Bayesian - constant, per-send (M4 - M2) -0.689 -1.420 -0.068  -0.000     302
+    1               Bayesian - constant, average -2.317 -3.192 -1.469  -0.009     302
+    3 Pooled - per-send, constant gain (M1 - M2) -0.559 -1.975  0.952  -0.000     302
+    3      Pooled - per-send, Bayesian (M3 - M4) -1.746 -3.364 -0.095  -0.000     302
+    3                 Pooled - per-send, average -1.152 -2.539  0.314  -0.001     302
+    3      Bayesian - constant, pooled (M3 - M1) -1.621 -2.860 -0.461  -0.000     302
+    3    Bayesian - constant, per-send (M4 - M2) -0.433 -1.059  0.224  -0.000     302
+    3               Bayesian - constant, average -1.027 -1.771 -0.331  -0.000     302
+
+=== Transfer to the other task, 20 rounds: scores
+ task    model  mean_ll  median_ll  prob_per_choice  vs_baseline     low    high  very_surprised
+    1       M1  -50.954    -25.205            0.078      -26.827 -36.182 -18.700           0.609
+    1       M2  -78.360    -31.223            0.020      -54.233 -66.395 -42.817           0.682
+    1       M3  -63.327    -26.161            0.042      -39.200 -50.014 -29.166           0.639
+    1       M4  -79.801    -31.326            0.018      -55.674 -67.817 -43.997           0.689
+    1 baseline  -24.127    -21.948            0.299        0.000   0.000   0.000           0.583
+    3       M1  -71.927    -26.800            0.027      -48.598 -60.459 -38.126           0.652
+    3       M2  -85.122    -32.766            0.014      -61.792 -75.214 -49.789           0.709
+    3       M3  -71.072    -26.195            0.029      -47.743 -59.915 -36.644           0.662
+    3       M4  -91.011    -31.647            0.011      -67.682 -81.914 -54.680           0.712
+    3 baseline  -23.329    -22.251            0.311        0.000   0.000   0.000           0.576
+
+=== Transfer to the other task, 20 rounds: paired contrasts
+ task                                   contrast    mean     low   high  median  people
+    1 Pooled - per-send, constant gain (M1 - M2)  27.406  19.060 35.766   2.438     302
+    1      Pooled - per-send, Bayesian (M3 - M4)  16.474  10.050 23.386   0.269     302
+    1                 Pooled - per-send, average  21.940  15.342 28.783   2.204     302
+    1      Bayesian - constant, pooled (M3 - M1) -12.373 -19.241 -6.053  -0.078     302
+    1    Bayesian - constant, per-send (M4 - M2)  -1.441  -4.401  1.288   0.000     302
+    1               Bayesian - constant, average  -6.907 -10.723 -3.321  -0.006     302
+    3 Pooled - per-send, constant gain (M1 - M2)  13.194   5.735 21.198   0.038     302
+    3      Pooled - per-send, Bayesian (M3 - M4)  19.939  11.729 28.933   0.553     302
+    3                 Pooled - per-send, average  16.567   9.583 24.489   0.333     302
+    3      Bayesian - constant, pooled (M3 - M1)   0.855  -3.883  5.143   0.053     302
+    3    Bayesian - constant, per-send (M4 - M2)  -5.890 -11.386 -1.203  -0.004     302
+    3               Bayesian - constant, average  -2.517  -6.056  0.648   0.005     302
+
+=== Held-out contrasts without constant senders
+ task                                   contrast   mean    low   high  median  people
+    1 Pooled - per-send, constant gain (M1 - M2)  2.041  1.086  3.001   0.149     266
+    1      Pooled - per-send, Bayesian (M3 - M4)  0.814 -0.031  1.680   0.004     266
+    1                 Pooled - per-send, average  1.428  0.617  2.263   0.047     266
+    1      Bayesian - constant, pooled (M3 - M1) -0.905 -1.680 -0.157  -0.034     266
+    1    Bayesian - constant, per-send (M4 - M2)  0.322 -0.081  0.749   0.001     266
+    1               Bayesian - constant, average -0.291 -0.762  0.155  -0.000     266
+    3 Pooled - per-send, constant gain (M1 - M2)  0.779 -0.220  1.826   0.040     260
+    3      Pooled - per-send, Bayesian (M3 - M4)  0.719 -0.094  1.566   0.061     260
+    3                 Pooled - per-send, average  0.749 -0.118  1.652   0.045     260
+    3      Bayesian - constant, pooled (M3 - M1)  0.658  0.242  1.147   0.004     260
+    3    Bayesian - constant, per-send (M4 - M2)  0.718  0.225  1.290  -0.000     260
+    3               Bayesian - constant, average  0.688  0.327  1.106   0.002     260
+
+=== Constant senders only: mean held-out LL
+              1      3
+model                 
+M1       -0.768 -0.000
+M2       -0.540 -0.000
+M3       -0.000 -0.000
+M4       -0.000 -0.000
+baseline -0.859 -0.859
+
+=== Winner shares, held-out, ties split (secondary)
+           1      3
+model              
+M1     0.407  0.256
+M2     0.181  0.179
+M3     0.235  0.372
+M4     0.177  0.193
+
+=== Training fit: LL, AIC, BIC
+ task model  train_ll    aic    bic
+    1    M1   -2305.1 7028.3 7890.0
+    1    M2   -2163.6 6745.2 7607.0
+    1    M3   -2311.4 7040.9 7902.6
+    1    M4   -2152.7 6723.3 7585.1
+    3    M1   -2312.9 7043.8 7905.5
+    3    M2   -2229.4 6876.8 7738.5
+    3    M3   -2305.0 7027.9 7889.7
+    3    M4   -2210.2 6838.5 7700.2
+
+=== Parameters: median (IQR), share at a limit. See recovery for what's readable
+ task model  g0             beta  beta_bound                    rho  rho_bound                 tau  tau_bound                  gain  gain_bound
+    1    M1 1.3   7.87 (2.99-20)        0.30 0.0539 (0.0399-0.0666)       0.15 0.859 (-0.291-2.49)       0.19  0.005 (0.005-0.0403)        0.58
+    1    M2 1.7   4.41 (1.64-20)        0.27   0.127 (0.0969-0.154)       0.12  1.08 (-0.0329-3.5)       0.22  0.0148 (0.005-0.056)        0.38
+    1    M3 1.7 3.07 (1.36-15.2)        0.22    0.12 (0.0851-0.149)       0.15 0.894 (-0.189-2.75)       0.20        200 (20.4-200)        0.61
+    1    M4 1.7   4.42 (1.66-20)        0.28   0.126 (0.0979-0.152)       0.12  1.08 (-0.0407-3.9)       0.22       54.5 (13.1-200)        0.40
+    3    M1 1.8  2.92 (0.953-20)        0.27    0.15 (0.0936-0.207)       0.18 0.883 (-0.225-2.48)       0.20 0.00932 (0.005-0.101)        0.48
+    3    M2 1.8    4.3 (1.02-20)        0.30    0.159 (0.114-0.246)       0.20  1.18 (0.0148-5.44)       0.25  0.0236 (0.005-0.105)        0.37
+    3    M3 1.6   3.88 (1.28-20)        0.30   0.116 (0.0737-0.163)       0.18 0.965 (-0.131-2.37)       0.21       74.4 (5.55-200)        0.49
+    3    M4 1.9      4 (1.01-20)        0.32    0.177 (0.128-0.274)       0.19     1.27 (0.0979-6)       0.26       28.1 (5.18-200)        0.37
+
+=== rho by profile (median)
+profile     Competitive_AI  Exploratory_AI  Social_AI
+task model                                           
+1    M1              0.054           0.054      0.054
+     M2              0.129           0.128      0.124
+     M3              0.124           0.114      0.119
+     M4              0.129           0.127      0.125
+3    M1              0.152           0.152      0.149
+     M2              0.164           0.160      0.156
+     M3              0.118           0.112      0.118
+     M4              0.181           0.178      0.175
+
+=== Choice shares on held-out rounds
+                  p0     p1     p2     p3
+task model                               
+1    M1        0.121  0.300  0.355  0.224
+     M2        0.125  0.326  0.312  0.238
+     M3        0.118  0.318  0.348  0.216
+     M4        0.118  0.331  0.319  0.232
+     observed  0.096  0.251  0.386  0.267
+3    M1        0.259  0.296  0.249  0.196
+     M2        0.259  0.298  0.230  0.213
+     M3        0.247  0.303  0.249  0.201
+     M4        0.256  0.311  0.224  0.209
+     observed  0.237  0.252  0.275  0.236
+
+=== Post-hoc lapse check: held-out gap to baseline, and the two average contrasts
+ lapse  task                   M1                   M2                   M3                   M4    Pooled - per-send  Bayesian - constant
+  0.02     1 -0.13 (-0.51, +0.22) -0.96 (-1.45, -0.52) -0.37 (-0.79, +0.01) -0.74 (-1.20, -0.33) +0.60 (+0.28, +0.95) -0.01 (-0.15, +0.13)
+  0.02     3 -0.08 (-0.45, +0.26) -0.51 (-0.93, -0.12) +0.12 (-0.19, +0.42) -0.41 (-0.80, -0.04) +0.48 (+0.20, +0.80) +0.15 (+0.02, +0.29)
+  0.05     1 +0.09 (-0.22, +0.39) -0.64 (-1.06, -0.26) -0.12 (-0.47, +0.21) -0.45 (-0.84, -0.10) +0.53 (+0.25, +0.84) -0.02 (-0.14, +0.11)
+  0.05     3 +0.14 (-0.17, +0.42) -0.25 (-0.60, +0.09) +0.29 (+0.03, +0.55) -0.18 (-0.51, +0.13) +0.43 (+0.19, +0.70) +0.11 (+0.00, +0.23)
+  0.10     1 +0.27 (+0.00, +0.52) -0.38 (-0.74, -0.05) +0.07 (-0.23, +0.36) -0.22 (-0.55, +0.08) +0.47 (+0.23, +0.74) -0.02 (-0.13, +0.09)
+  0.10     3 +0.30 (+0.05, +0.55) -0.04 (-0.34, +0.25) +0.42 (+0.20, +0.65) +0.01 (-0.28, +0.28) +0.38 (+0.18, +0.61) +0.08 (-0.01, +0.18)
+
+=== Fitted learning at its lower limit, or kappa at its upper limit
+model     M1     M2     M3     M4
+task                             
+1      0.563  0.374  0.593  0.364
+3      0.454  0.331  0.430  0.315
+
+=== Belief about return per point after training
+               send_2.5  send_7  send_10
+task model                              
+1    M1            1.27    1.27     1.27
+     M2            1.55    1.61     1.66
+     M3            1.58    1.59     1.60
+     M4            1.57    1.60     1.66
+     observed      1.03    1.23     1.35
+3    M1            1.59    1.61     1.62
+     M2            1.59    1.68     1.74
+     M3            1.43    1.45     1.46
+     M4            1.67    1.75     1.81
+     observed      1.00    1.23     1.33
